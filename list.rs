@@ -2,12 +2,10 @@ use std::fmt;
 
 type Pointer<T> = Option<Box<Node<T>>>;
 
-#[derive(Debug)]
 pub struct List<T> {
   head: Pointer<T>
 }
 
-#[derive(Debug)]
 struct Node<T> {
   value: T,
   next: Pointer<T>
@@ -97,6 +95,7 @@ impl<T: fmt::Display> fmt::Display for List<T> {
     let mut iter = self.into_iter();
     let head = iter.next();
     if let Some(value) = head {
+      // append to the formatter with a '?'
       write!(f, "{}", value)?;
       for value in iter {
         write!(f, " -> {}", value)?;
@@ -113,11 +112,19 @@ fn main() {
   list.push(10);
   list.push(3);
   list.push(21);
+  // fmt::Display
   println!("{}", list);
+  // into_iter for &'a List<T>
   for value in &list {
     println!("{}", value);
   }
+  // into_iter for List<T>
+  // values will be moved, list is no longer accessible.
   for value in list {
     println!("{}", value);
   }
+  /*
+   * error[E0382]: borrow of moved value: `list`
+   * println!("{}", list);
+  **/
 }
