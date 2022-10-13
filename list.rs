@@ -35,10 +35,40 @@ impl<T> List<T> {
   }
 }
 
+pub struct ListIter<T> {
+  next: Pointer<T>
+}
+
+impl<T> Iterator for ListIter<T> {
+  type Item = T;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    let current = self.next.take();
+    match current {
+      None => None,
+      Some(boxed_node) => {
+        self.next = boxed_node.next;
+        Some(boxed_node.value)
+      }
+    }
+  }
+}
+
+impl<T> IntoIterator for List<T> {
+  type Item = T;
+  type IntoIter = ListIter<T>;
+
+  fn into_iter(self) -> Self::IntoIter {
+    ListIter { next: self.head }
+  }
+}
+
 fn main() {
   let mut list = List::<i32>::new();
   list.push(10);
   list.push(3);
   list.push(21);
-  println!("{:?}", list);
+  for value in list {
+    println!("{}", value);
+  }
 }
