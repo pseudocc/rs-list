@@ -54,6 +54,24 @@ impl<T> Iterator for ListIter<T> {
   }
 }
 
+pub struct ListRefIter<'a, T> {
+  next: &'a Pointer<T>
+}
+
+impl<'a, T> Iterator for ListRefIter<'a, T> {
+  type Item = &'a T;
+
+  fn next(&mut self) -> Option<Self::Item> {
+    match self.next {
+      None => None,
+      Some(boxed_node) => {
+        self.next = &boxed_node.next;
+        Some(&boxed_node.value)
+      }
+    }
+  }
+}
+
 impl<T> IntoIterator for List<T> {
   type Item = T;
   type IntoIter = ListIter<T>;
@@ -63,11 +81,23 @@ impl<T> IntoIterator for List<T> {
   }
 }
 
+impl<'a, T> IntoIterator for &'a List<T> {
+  type Item = &'a T;
+  type IntoIter = ListRefIter<'a, T>;
+
+  fn into_iter(self) -> Self::IntoIter {
+    ListRefIter { next: &self.head }
+  }
+}
+
 fn main() {
   let mut list = List::<i32>::new();
   list.push(10);
   list.push(3);
   list.push(21);
+  for value in &list {
+    println!("{}", value);
+  }
   for value in list {
     println!("{}", value);
   }
