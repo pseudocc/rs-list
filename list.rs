@@ -1,3 +1,5 @@
+use std::fmt;
+
 type Pointer<T> = Option<Box<Node<T>>>;
 
 #[derive(Debug)]
@@ -90,11 +92,28 @@ impl<'a, T> IntoIterator for &'a List<T> {
   }
 }
 
+impl<T: fmt::Display> fmt::Display for List<T> {
+  fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+    let mut iter = self.into_iter();
+    let head = iter.next();
+    if let Some(value) = head {
+      write!(f, "{}", value)?;
+      for value in iter {
+        write!(f, " -> {}", value)?;
+      }
+      write!(f, "")
+    } else {
+      write!(f, "None")
+    }
+  }
+}
+
 fn main() {
   let mut list = List::<i32>::new();
   list.push(10);
   list.push(3);
   list.push(21);
+  println!("{}", list);
   for value in &list {
     println!("{}", value);
   }
