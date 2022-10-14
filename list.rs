@@ -36,21 +36,14 @@ impl<T> List<T> {
 }
 
 pub struct ListIter<T> {
-  next: Pointer<T>
+  list: List<T>
 }
 
 impl<T> Iterator for ListIter<T> {
   type Item = T;
 
   fn next(&mut self) -> Option<Self::Item> {
-    let current = self.next.take();
-    match current {
-      None => None,
-      Some(boxed_node) => {
-        self.next = boxed_node.next;
-        Some(boxed_node.value)
-      }
-    }
+    self.list.pop()
   }
 }
 
@@ -77,7 +70,7 @@ impl<T> IntoIterator for List<T> {
   type IntoIter = ListIter<T>;
 
   fn into_iter(self) -> Self::IntoIter {
-    ListIter { next: self.head }
+    ListIter { list: self }
   }
 }
 
@@ -104,6 +97,12 @@ impl<T: fmt::Display> fmt::Display for List<T> {
     } else {
       write!(f, "None")
     }
+  }
+}
+
+impl<T> Drop for List<T> {
+  fn drop(&mut self) {
+    while let Some(_) = self.pop() {}
   }
 }
 
