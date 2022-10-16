@@ -105,25 +105,3 @@ impl<T> Drop for List<T> {
     while let Some(_) = self.pop() {}
   }
 }
-
-fn main() {
-  let mut list = List::<i32>::new();
-  list.push(10);
-  list.push(3);
-  list.push(21);
-  // fmt::Display
-  println!("{}", list);
-  // into_iter for &'a List<T>
-  for value in &list {
-    println!("{}", value);
-  }
-  // into_iter for List<T>
-  // values will be moved, list is no longer accessible.
-  for value in list {
-    println!("{}", value);
-  }
-  /*
-   * error[E0382]: borrow of moved value: `list`
-   * println!("{}", list);
-  **/
-}
