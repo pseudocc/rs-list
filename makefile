@@ -13,8 +13,8 @@ $(LIB): list.rs
 $(TEST): %: %.rs $(LIB)
 	$(CC) $< --test --extern list=$(LIB) -o $@
 
-test: $(TEST)
-	./test/main
+test: test/main
+	./$< --test $(CASE)
 
 clean:
 	rm -f $(LIB) $(TEST)
